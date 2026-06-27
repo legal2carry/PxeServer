@@ -1,0 +1,15 @@
+# Logs
+*.log
+
+# TFTPD64 binary and docs (downloaded separately)
+tftpd64/tftpd64.exe
+tftpd64/tftpd32.chm
+tftpd64/EUPL-EN.pdf
+
+# Syslinux binaries (downloaded separately — see README)
+tftproot/*.0
+tftproot/*.c32
+
+# Downloaded zips
+*.zip
+*.exe

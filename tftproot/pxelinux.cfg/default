@@ -1,0 +1,8 @@
+DEFAULT menu.c32
+PROMPT 0
+TIMEOUT 50
+ONTIMEOUT local
+
+LABEL local
+  MENU LABEL Boot from Local Disk
+  LOCALBOOT 0
