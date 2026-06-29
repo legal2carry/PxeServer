@@ -67,6 +67,15 @@ try {
     Copy-Item -Path "C:\shared\imaging\startnet.cmd" `
               -Destination "$MountDir\Windows\System32\startnet.cmd" -Force
 
+    # Embed share password (imaging/share.pw, gitignored) so startnet.cmd can mount without prompting
+    $SharePwFile = "$PSScriptRoot\share.pw"
+    if (Test-Path $SharePwFile) {
+        Copy-Item -Path $SharePwFile -Destination "$MountDir\share.pw" -Force
+        Write-Host "share.pw embedded in WinPE image."
+    } else {
+        Write-Warning "imaging\share.pw not found - WinPE will prompt for password at boot. Create it from share.pw.example."
+    }
+
     Write-Host "Components added successfully."
 } finally {
     # Unmount and commit

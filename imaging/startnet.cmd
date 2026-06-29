@@ -14,12 +14,18 @@ echo Waiting for network...
 ping -n 6 127.0.0.1 >nul
 
 :: Mount the imaging share
+:: Password read from share.pw embedded in WinPE image by build-winpe.ps1 (not in git)
 echo Mounting imaging share...
-net use Z: \\10.1.4.245\shared /user:info Thunder20 /persistent:no
+if exist X:\share.pw (
+    set /p SHAREPW=<X:\share.pw
+) else (
+    set /p SHAREPW=Enter imaging share password:
+)
+net use Z: \\10.1.4.245\shared /user:info %SHAREPW% /persistent:no
 if errorlevel 1 (
     echo ERROR: Could not mount share. Retrying in 10 seconds...
     ping -n 11 127.0.0.1 >nul
-    net use Z: \\10.1.4.245\shared /user:info Thunder20 /persistent:no
+    net use Z: \\10.1.4.245\shared /user:info %SHAREPW% /persistent:no
 )
 if errorlevel 1 (
     echo FATAL: Could not mount \\10.1.4.245\shared
