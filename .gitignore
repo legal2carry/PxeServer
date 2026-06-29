@@ -1,3 +1,6 @@
+# Credentials (never commit - create imaging/share.pw from share.pw.example)
+imaging/share.pw
+
 # Logs
 *.log
 
