@@ -1,4 +1,8 @@
 #Requires -RunAsAdministrator
+param(
+    [Parameter(Mandatory=$false)]
+    [string]$SharePassword
+)
 # Run once as Administrator to complete PXE server setup
 $ErrorActionPreference = 'Stop'
 
@@ -22,7 +26,11 @@ Write-Host "BCD configured." -ForegroundColor Green
 
 # 2. Create 'info' local user
 Write-Host "`n[2/6] Creating local user 'info'..."
-$pw = Read-Host "Password for local 'info' account" -AsSecureString
+if ($SharePassword) {
+    $pw = ConvertTo-SecureString $SharePassword -AsPlainText -Force
+} else {
+    $pw = Read-Host "Password for local 'info' account" -AsSecureString
+}
 try {
     New-LocalUser -Name "info" -Password $pw -PasswordNeverExpires $true `
         -UserMayNotChangePassword $true -Description "PXE imaging share account"
