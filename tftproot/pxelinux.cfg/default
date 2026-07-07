@@ -1,7 +1,14 @@
-DEFAULT menu.c32
+DEFAULT winpe
 PROMPT 0
 TIMEOUT 50
 ONTIMEOUT local
+
+MENU TITLE FDLTCC PXE Boot Menu
+
+LABEL winpe
+  MENU LABEL Boot WinPE Imaging
+  KERNEL wimboot
+  INITRD Boot/bootmgr,Boot/BCD,Boot/boot.sdi,Boot/boot.wim
 
 LABEL local
   MENU LABEL Boot from Local Disk

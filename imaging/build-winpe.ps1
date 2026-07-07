@@ -94,6 +94,9 @@ New-Item -ItemType Directory -Path "$TftpRoot\sources" -Force | Out-Null
 Copy-Item -Path "$WorkDir\media\bootmgr.efi" -Destination "$TftpRoot\Boot\bootmgr.efi" -Force -ErrorAction SilentlyContinue
 Copy-Item -Path "$WorkDir\media\EFI\Boot\bootx64.efi" -Destination "$TftpRoot\Boot\bootx64.efi" -Force
 
+# BIOS boot manager - needed by wimboot to chainload boot.wim for legacy PXE clients
+Copy-Item -Path "$WorkDir\media\bootmgr" -Destination "$TftpRoot\Boot\bootmgr" -Force
+
 # Boot support files
 Copy-Item -Path "$WorkDir\media\Boot\boot.sdi" -Destination "$TftpRoot\Boot\boot.sdi" -Force
 Copy-Item -Path "$WorkDir\media\Boot\BCD" -Destination "$TftpRoot\Boot\BCD" -Force
@@ -116,4 +119,5 @@ Write-Host "TFTP boot files:"
 Get-ChildItem "$TftpRoot\Boot" | Select-Object Name, @{N='MB';E={[math]::Round($_.Length/1MB,1)}} | Format-Table -AutoSize
 Write-Host ""
 Write-Host "DHCP proxy serves Boot/bootx64.efi for UEFI clients automatically."
+Write-Host "BIOS clients boot pxelinux.0 -> wimboot -> Boot/{bootmgr,BCD,boot.sdi,boot.wim} via pxelinux.cfg/default."
 Write-Host "PXE boot a test machine to verify WinPE loads."

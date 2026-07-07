@@ -13,9 +13,13 @@ tftpd64/EUPL-EN.pdf
 tftproot/*.0
 tftproot/*.c32
 
+# wimboot binary (downloaded separately - https://ipxe.org/wimboot)
+tftproot/wimboot
+
 # WinPE boot image (large binary - built on server with build-winpe.ps1)
 tftproot/Boot/boot.wim
 tftproot/Boot/BCD
+tftproot/Boot/bootmgr
 tftproot/Boot/*.efi
 tftproot/Boot/*.sdi
 
