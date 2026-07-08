@@ -177,12 +177,11 @@
         <LocalAccounts>
           <LocalAccount wcm:action="add">
             <Description>FDLTCC Admin Account</Description>
-            <DisplayName>REDACTED</DisplayName>
+            <DisplayName>admin</DisplayName>
             <Group>Administrators</Group>
-            <Name>REDACTED</Name>
+            <Name>admin</Name>
             <Password>
-              <!-- CHANGE THIS PASSWORD -->
-              <Value>REDACTED</Value>
+              <Value>!234</Value>
               <PlainText>true</PlainText>
             </Password>
           </LocalAccount>
@@ -192,12 +191,12 @@
       <!-- Auto-login once to run post-install script, then stop -->
       <AutoLogon>
         <Password>
-          <Value>REDACTED</Value>
+          <Value>!234</Value>
           <PlainText>true</PlainText>
         </Password>
         <Enabled>true</Enabled>
         <LogonCount>1</LogonCount>
-        <Username>REDACTED</Username>
+        <Username>admin</Username>
       </AutoLogon>
 
       <!-- Run post-install script on first logon -->
