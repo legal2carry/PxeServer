@@ -7,8 +7,8 @@ MENU TITLE FDLTCC PXE Boot Menu
 
 LABEL winpe
   MENU LABEL Boot WinPE Imaging
-  KERNEL wimboot
-  INITRD Boot/bootmgr,Boot/BCD,Boot/boot.sdi,Boot/boot.wim
+  KERNEL linux.c32
+  APPEND wimboot initrdfile=Boot/bootmgr,Boot/BCD,Boot/boot.sdi,Boot/boot.wim
 
 LABEL local
   MENU LABEL Boot from Local Disk

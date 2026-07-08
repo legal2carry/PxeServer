@@ -67,13 +67,40 @@ try {
     Copy-Item -Path "C:\shared\imaging\startnet.cmd" `
               -Destination "$MountDir\Windows\System32\startnet.cmd" -Force
 
-    # Embed share password (imaging/share.pw, gitignored) so startnet.cmd can mount without prompting
-    $SharePwFile = "$PSScriptRoot\share.pw"
-    if (Test-Path $SharePwFile) {
-        Copy-Item -Path $SharePwFile -Destination "$MountDir\share.pw" -Force
-        Write-Host "share.pw embedded in WinPE image."
+    # rtucx21x64.inf (Realtek RTL8153 "UCX" USB Ethernet driver) enumerates and shows Status:
+    # Started in WinPE but never brings up link - a known WinPE-specific driver bug (see
+    # https://www.dell.com/support/kbdoc/en-us/000222732). rtux64w10.inf, the older NDIS-style
+    # driver for the same hardware ID, ships alongside it in the base ADK image and works, but
+    # loses PnP's default ranking to rtucx21x64.inf. DISM's Remove-WindowsDriver refuses to
+    # remove it ("default driver package"), so delete its files directly so PnP has no choice
+    # but to fall back to rtux64w10.inf.
+    Write-Host "Removing non-functional Realtek USB GbE (UCX) driver so the working fallback driver binds..."
+    $BadDriverInf = "$MountDir\Windows\INF\rtucx21x64.inf"
+    if (Test-Path $BadDriverInf) {
+        $BadDriverLoc = "$MountDir\Windows\System32\DriverStore\en-US\rtucx21x64.inf_loc"
+        $BadDriverRepoDirs = Get-ChildItem "$MountDir\Windows\System32\DriverStore\FileRepository" -Directory -Filter "rtucx21x64.inf_amd64_*" -ErrorAction SilentlyContinue
+
+        $driverTargets = @($BadDriverInf, $BadDriverLoc) + ($BadDriverRepoDirs | ForEach-Object { $_.FullName })
+        foreach ($target in $driverTargets) {
+            if (-not (Test-Path $target)) { continue }
+            $isDir = (Get-Item $target -Force).PSIsContainer
+            if ($isDir) { Remove-Item $target -Recurse -Force -ErrorAction SilentlyContinue } else { Remove-Item $target -Force -ErrorAction SilentlyContinue }
+            if (Test-Path $target) {
+                # File is TrustedInstaller-owned with no delete rights for Administrators - take ownership first
+                if ($isDir) {
+                    & takeown /f $target /r /d y | Out-Null
+                    & icacls $target /grant "*S-1-5-32-544:F" /t /c | Out-Null
+                    Remove-Item $target -Recurse -Force
+                } else {
+                    & takeown /f $target | Out-Null
+                    & icacls $target /grant "*S-1-5-32-544:F" | Out-Null
+                    Remove-Item $target -Force
+                }
+            }
+        }
+        Write-Host "Removed rtucx21x64.inf; rtux64w10.inf remains as the driver for USB\VID_0BDA&PID_8153 (RTL8153)."
     } else {
-        Write-Warning "imaging\share.pw not found - WinPE will prompt for password at boot. Create it from share.pw.example."
+        Write-Host "rtucx21x64.inf not present in this WinPE build; nothing to remove."
     }
 
     Write-Host "Components added successfully."
